@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import useHttp from './components/hooks/useHttp';
 import NewTask from './components/NewTask/NewTask';
@@ -7,7 +7,7 @@ import Tasks from './components/Tasks/Tasks';
 function App() {
   const [tasks, setTasks] = useState([]);
 
-  const transformData = (data) => {
+  const transformData = useCallback((data) => {
     const loadedTasks = [];
 
     for (const taskKey in data) {
@@ -15,22 +15,18 @@ function App() {
     }
 
     setTasks(loadedTasks);
-  };
+  }, []);
 
-  const {
-    isLoading,
-    error,
-    sendRequest: fetchTasks,
-  } = useHttp(
-    {
-      url: 'https://react-tcg-14-default-rtdb.firebaseio.com/tasks.json',
-    },
-    transformData
-  );
+  const { isLoading, error, sendRequest: fetchTasks } = useHttp();
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    fetchTasks(
+      {
+        url: 'https://react-tcg-14-default-rtdb.firebaseio.com/tasks.json',
+      },
+      transformData
+    );
+  }, [fetchTasks, transformData]);
 
   const taskAddHandler = (task) => {
     setTasks((prevTasks) => prevTasks.concat(task));
