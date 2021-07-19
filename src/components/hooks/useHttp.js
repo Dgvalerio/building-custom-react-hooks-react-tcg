@@ -3,15 +3,14 @@ import { useState } from 'react';
 const useHttp = (
   {
     url = 'https://react-tcg-14-default-rtdb.firebaseio.com/tasks.json',
-    method = 'POST',
-    headers,
+    method = 'GET',
+    headers = {},
     body,
   },
   applyData
 ) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [tasks, setTasks] = useState([]);
 
   const sendRequest = async () => {
     setIsLoading(true);
@@ -20,7 +19,7 @@ const useHttp = (
       const response = await fetch(url, {
         method,
         headers,
-        body: JSON.stringify(body),
+        body: body ? JSON.stringify(body) : null,
       });
 
       if (!response.ok) {
